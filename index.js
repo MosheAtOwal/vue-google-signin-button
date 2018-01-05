@@ -26,7 +26,7 @@
       mounted () {
         const asyncScript = document.getElementById('gapi')
         if(asyncScript) {
-          asyncScript.addEventListener('readystatechange', this.initialize)
+          asyncScript.addEventListener('readystatechange', this.initialize())
         } else {
           this.initialize()
         }
@@ -34,7 +34,7 @@
       beforeDestroy () {
         const asyncScript = document.getElementById('gapi')
         if(asyncScript) {
-          asyncScript.removeEventListener('readystatechange', this.initialize)
+          asyncScript.removeEventListener('readystatechange', this.initialize())
         }
       },
       methods: {
