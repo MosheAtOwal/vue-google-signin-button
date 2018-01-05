@@ -24,25 +24,41 @@
         }
       },
       mounted () {
-        if (!window.gapi) {
-          err('"https://apis.google.com/js/api:client.js" needs to be included as a <script>.')
-          return
+        const asyncScript = document.getElementById('gapi')
+        if(asyncScript) {
+          asyncScript.addEventListener('readystatechange', this.initialize)
+        } else {
+          this.initialize()
         }
-
-        if (!this.params.client_id) {
-          err('params.client_id must be specified.')
-          return
+      },
+      beforeDestroy () {
+        const asyncScript = document.getElementById('gapi')
+        if(asyncScript) {
+          asyncScript.removeEventListener('readystatechange', this.initialize)
         }
-
-        window.gapi.load('auth2', () => {
-          const auth2 = window.gapi.auth2.init(this.params)
-          auth2.attachClickHandler(this.$refs.signinBtn, {}, googleUser => {
-            this.$emit('success', googleUser)
-          }, error => {
-            this.$emit('error', error)
-            this.$emit('failure', error) // an alias
+      },
+      methods: {
+        initialize: function () {
+          if (!window.gapi) {
+            err('"https://apis.google.com/js/api:client.js" needs to be included as a <script>.')
+            return
+          }
+  
+          if (!this.params.client_id) {
+            err('params.client_id must be specified.')
+            return
+          }
+  
+          window.gapi.load('auth2', () => {
+            const auth2 = window.gapi.auth2.init(this.params)
+            auth2.attachClickHandler(this.$refs.signinBtn, {}, googleUser => {
+              this.$emit('success', googleUser)
+            }, error => {
+              this.$emit('error', error)
+              this.$emit('failure', error) // an alias
+            })
           })
-        })
+        }
       }
     })
   }
